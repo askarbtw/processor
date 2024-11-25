@@ -23,7 +23,15 @@ std::string Disassembler::disassembleLine(const std::string &binary) {
     // Decode operands
     std::ostringstream oss;
     oss << mnemonic << " ";
-    if (format == "10") {
+    if (format == "11") {
+        bool isStore = binary[13] == '1';
+        std::string mnemonic = isStore ? "st" : "ld";
+        std::string rx = ISA::decodeRegister(binary.substr(0, 3));
+        std::string ry = ISA::decodeRegister(binary.substr(3, 3));
+        std::ostringstream oss;
+        oss << mnemonic << " " << rx << ", (" << ry << ")";
+        return oss.str();
+    } else if (format == "10") {
         std::string condition = binary.substr(12, 2);
         std::string mnemonic;
         if (condition == "00") mnemonic = "bie";

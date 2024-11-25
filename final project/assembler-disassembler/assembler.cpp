@@ -10,6 +10,7 @@ std::string Assembler::assembleLine(const std::string &line) {
     std::string mnemonic, result;
     iss >> mnemonic;
     bool isBranch = (mnemonic == "bie" || mnemonic == "big" || mnemonic == "bil");
+    bool isLS = (mnemonic == "ld" || mnemonic == "st");
 
     // Determine if it's an immediate instruction (ends with 'i')
     bool isImmediate = mnemonic.back() == 'i';
@@ -32,7 +33,10 @@ std::string Assembler::assembleLine(const std::string &line) {
     instruction.set(13, opcode[2] - '0');
 
     // Set format bits (1-0)
-    if (isBranch) {
+    if (isLS) {
+        instruction.set(14, 1);
+        instruction.set(15, 1);
+    } else if (isBranch) {
         instruction.set(14, 1);
         instruction.set(15, 0);
     } else if (isImmediate) {
@@ -45,7 +49,31 @@ std::string Assembler::assembleLine(const std::string &line) {
 
     // Process operands
     
-    if (isBranch) {
+    if (isLS) {
+         if (mnemonic == "st") {
+            instruction.set(13, 1);
+        } else {
+            instruction.set(13, 0);
+        }
+
+        std::string rx, ry;
+        iss >> rx >> ry;
+
+        // Remove parentheses from `ry` (e.g., "(ry)" → "ry")
+        ry = ry.substr(1, ry.size() - 2);
+
+        // Set Rx (bits 2-0)
+        std::bitset<3> regBitsRx = std::bitset<3>(std::stoi(rx.substr(1)));
+        for (int i = 0; i < 3; ++i) {
+            instruction.set(i, regBitsRx[2 - i]);
+        }
+
+        // Set Ry (bits 5-3)
+        std::bitset<3> regBitsRy = std::bitset<3>(std::stoi(ry.substr(1)));
+        for (int i = 0; i < 3; ++i) {
+            instruction.set(3 + i, regBitsRy[2 - i]);
+        }
+    } else if (isBranch) {
         // Set branch condition (bits 13-12)
         std::string conditionBits;
         if (mnemonic == "bie") conditionBits = "00";

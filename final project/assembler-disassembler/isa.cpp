@@ -5,13 +5,13 @@
 std::unordered_map<std::string, std::string> ISA::mnemonicToOpcode = {
     {"add", "000"}, {"sub", "001"}, {"and", "010"}, {"or", "011"},
     {"xor", "100"}, {"shl", "101"}, {"shr", "110"}, {"cmp", "111"},
-    {"bie", "00"}, {"big", "01"}, {"bil", "10"}
+    {"bie", "00"}, {"big", "01"}, {"bil", "10"}, {"ld", "0"}, {"st", "1"}
 };
 
 std::unordered_map<std::string, std::string> ISA::opcodeToMnemonic = {
     {"000", "add"}, {"001", "sub"}, {"010", "and"}, {"011", "or"},
     {"100", "xor"}, {"101", "shl"}, {"110", "shr"}, {"111", "cmp"},
-    {"00", "bie"}, {"01", "big"}, {"10", "bil"}
+    {"00", "bie"}, {"01", "big"}, {"10", "bil"}, {"0", "ld"}, {"1", "st"}
 };
 
 std::string ISA::encodeRegister(const std::string &reg) {
